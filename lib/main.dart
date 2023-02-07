@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:toonflix/constants/themes.dart';
 import 'package:toonflix/screens/home_screen.dart';
+import 'package:toonflix/services/api_service.dart';
 
-void main() => runApp(App());
+void main() {
+  ApiService().getTodaysToons();
+  runApp(const App());
+}
 
 class App extends StatelessWidget {
+  const App({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: mainThemeData,
-      home: Scaffold(
-        body: HomeScreen(),
-      ),
+      home: HomeScreen(),
     );
   }
 }
