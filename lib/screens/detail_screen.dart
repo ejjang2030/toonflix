@@ -29,6 +29,7 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 2,
@@ -39,65 +40,108 @@ class _DetailScreenState extends State<DetailScreen> {
           style: TextStyle(fontSize: 24),
         ),
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 50,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(50),
+          child: Column(
             children: [
-              Hero(
-                tag: widget.id,
-                child: Container(
-                  width: 250,
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                            blurRadius: 15,
-                            offset: Offset(10, 10),
-                            color: Colors.black.withOpacity(0.3))
-                      ]),
-                  child: Image.network(widget.thumb),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: widget.id,
+                    child: Container(
+                      width: 250,
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 15,
+                                offset: Offset(10, 10),
+                                color: Colors.black.withOpacity(0.3))
+                          ]),
+                      child: Image.network(widget.thumb),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              FutureBuilder(
+                  future: webtoon,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final WebtoonDetailModel detail =
+                          snapshot.data! as WebtoonDetailModel;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            detail.about,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Text(
+                            '${detail.genre} / ${detail.age}',
+                            style: TextStyle(fontSize: 12),
+                          )
+                        ],
+                      );
+                    } else {
+                      return Text('...');
+                    }
+                  }),
+              const SizedBox(
+                height: 25,
+              ),
+              FutureBuilder(
+                future: episodes,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        for (var episode
+                            in snapshot.data! as List<WebtoonEpisodeModel>)
+                          Container(
+                            margin: EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.green.shade400,
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    episode.title,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
+                                  ),
+                                  Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                      ],
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
               ),
             ],
           ),
-          const SizedBox(
-            height: 25,
-          ),
-          FutureBuilder(
-              future: webtoon,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final WebtoonDetailModel detail =
-                      snapshot.data! as WebtoonDetailModel;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          detail.about,
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Text(
-                          '${detail.genre} / ${detail.age}',
-                          style: TextStyle(fontSize: 12),
-                        )
-                      ],
-                    ),
-                  );
-                } else {
-                  return Text('...');
-                }
-              })
-        ],
+        ),
       ),
     );
   }
